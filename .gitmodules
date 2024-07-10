@@ -1,0 +1,3 @@
+[submodule "iohk-nix"]
+	path = iohk-nix
+	url = ./iohk-nix

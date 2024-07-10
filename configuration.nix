@@ -36,6 +36,13 @@
     echo "loaded direnv!"
     '';
   };
+  programs.git = {
+    enable = true;
+    package = pkgs.gitFull;
+    config = {
+      credential.helper = "libsecret";
+    };
+  };
   users.users.nyc.shell = pkgs.zsh;
   
 
@@ -59,28 +66,75 @@ nix.gc = {
     options = "--delete-older-than 14d";
   };
 
+flake = builtins.getFlake ./iohk-flake.nix
+nix.settings.extra-nix-path = [
+       "nixpkgs-overlays=/etc/nixos/overlays/crypto/"
+       "nixpkgs-overlays=/etc/nixos/overlays/haskell-nix-crypto"
+       "nixpkgs-overlays=/etc/nixos/overlays/haskell-nix-extra"
+       "nixpkgs-overlays=/etc/nixos/overlays/rust"
+       "nixpkgs-overlays=/etc/nixos/overlays/utils"
+];
+
 environment.systemPackages = with pkgs; [
         alex
+        autoconf
+        automake
         binutils
+        cabal-install
+        cacert
         cargo
+        cmake
+        diffstat
         direnv
+        dstat
         epic5
-        gcc
-        ghc
+        file
+        gawk
+        gcc13
+        gccStdenv
+        haskell.compiler.ghcHEAD
         gnupg
         happy
-        cabal-install
+        # haskellPackages.Cabal_3_12_0_0
+        haskell-language-server
         git
+        git-credential-manager
         gnumake
+        gnupg
+        groff
+        jq
+        libsecret
+        libsodium
+        meson
+        m4
+        ninja
+        pam_gnupg
+        pass
         pass-git-helper
         patchutils
+        perl
         pinentry-curses
+        python3
+        R
+        ruby
         rustc
+        signing-party
         sqlite
+        step-ca
         openssh
         psmisc
+        time
+        units
         vim # text editor, worse
+        vimPlugins.nvim-treesitter-parsers.hlsplaylist
+        vimPlugins.nvim-treesitter-parsers.hlsl
+        vimPlugins.nvim-hlslens
+        vimPlugins.auto-hlsearch-nvim
         wget
+        xdg-launch
+        xdg-utils
+        xterm
+        zlib
         zsh
 ];
 
