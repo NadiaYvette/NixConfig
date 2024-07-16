@@ -66,14 +66,22 @@ nix.gc = {
     options = "--delete-older-than 14d";
   };
 
-flake = builtins.getFlake ./iohk-flake.nix
-nix.settings.extra-nix-path = [
-       "nixpkgs-overlays=/etc/nixos/overlays/crypto/"
-       "nixpkgs-overlays=/etc/nixos/overlays/haskell-nix-crypto"
-       "nixpkgs-overlays=/etc/nixos/overlays/haskell-nix-extra"
-       "nixpkgs-overlays=/etc/nixos/overlays/rust"
-       "nixpkgs-overlays=/etc/nixos/overlays/utils"
-];
+# Figuring out how to use the external git repo for the flake & overlays
+# might be a good idea at some point to automatically catch updates.
+# iohknix = builtins.fetchGit { url = "https://github.com/input-output-hk/iohk-nix/"; };
+
+# It's unclear whether this has the intended effect.
+nix.settings.extra-nix-path = (builtins.getFlake "/etc/nixos/iohk-nix/");
+
+# There should be something somewhere to read to get an idea of how to
+# form these overlay paths. The ones below didn't actually succeed.
+# nix.settings.extra-nix-path = [
+#       "nixpkgs-overlays=/etc/nixos/overlays/crypto/"
+#       "nixpkgs-overlays=/etc/nixos/overlays/haskell-nix-crypto"
+#       "nixpkgs-overlays=/etc/nixos/overlays/haskell-nix-extra"
+#       "nixpkgs-overlays=/etc/nixos/overlays/rust"
+#       "nixpkgs-overlays=/etc/nixos/overlays/utils"
+# ];
 
 environment.systemPackages = with pkgs; [
         alex
@@ -93,9 +101,45 @@ environment.systemPackages = with pkgs; [
         gcc13
         gccStdenv
         haskell.compiler.ghcHEAD
+        haskell.compiler.ghc910
+        haskell.compiler.ghc98
+        haskell.compiler.ghc96
+        haskell.compiler.ghc94
+        haskell.compiler.ghc92
+        haskell.compiler.ghc90
         gnupg
         happy
+        # hls plugins come in tiers, but they all appear to be broken.
+        # It may be my own local system state vs. upstream packaging.
+        # Tier 0:
+        # haskellPackages.ghcide-test-utils
+        haskellPackages.hls-plugin-api
+        # Tier 1:
+        # haskellPackages.hls-call-hierarchy-plugin
+        # haskellPackages.hls-code-range-plugin
+        # haskellPackages.hls-explicit-imports-plugin
+        # haskellPackages.hls-pragmas-plugin
+        # haskellPackages.hls-refactor-plugin
+        # Tier 2:
         # haskellPackages.Cabal_3_12_0_0
+        # haskellPackages.hls-alternate-number-format-plugin
+        # haskellPackages.hls-cabal-plugin
+        # haskellPackages.hls-cabal-fmt-plugin
+        # haskellPackages.hls-change-type-signature-plugin
+        # haskellPackages.hls-class-plugin
+        # haskellPackages.hls-eval-plugin
+        # haskellPackages.hls-explicit-fixity-plugin
+        # haskellPackages.hls-fourmolu-plugin
+        # haskellPackages.hls-gadt-plugin
+        # haskellPackages.hls-haddock-comments-plugin
+        # haskellPackages.hls-hlint-plugin
+        # haskellPackages.hls-module-name-plugin
+        # haskellPackages.hls-overloaded-record-dot-plugin
+        # haskellPackages.hls-qualify-imported-names-plugin
+        # haskellPackages.hls-selection-range-plugin
+        # haskellPackages.hls-stylish-haskell-plugin
+        # Tier 3:
+        # haskellPackages.hls-splice-plugin
         haskell-language-server
         git
         git-credential-manager
@@ -107,7 +151,9 @@ environment.systemPackages = with pkgs; [
         libsodium
         meson
         m4
+        neovim
         ninja
+        niv
         pam_gnupg
         pass
         pass-git-helper
